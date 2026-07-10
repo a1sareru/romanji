@@ -492,6 +492,7 @@ export default function App() {
 
     // 提交本次练习中通过的单词到进度记录
     const completedWords = sessionCompletedWordsRef.current;
+    let roundCompletedLibId: string | null = null;
     if (completedWords.length > 0) {
       const progressMap = { ...libraryProgress };
       completedWords.forEach(word => {
@@ -510,12 +511,7 @@ export default function App() {
         const totalWords = libraryTotalCounts[libId] || 0;
         const completedCount = (progressMap[libId] || []).length;
         if (totalWords > 0 && completedCount >= totalWords) {
-          // 整本词书过完一轮，完成回数 +1
-          const prevRecord = completedStats[libId] || { completedCount: 0, bestKPM: 0, bestEfficiency: 0, lastCompletedTime: 0 };
-          const updatedStats2 = { ...completedStats, [libId]: { ...prevRecord, completedCount: prevRecord.completedCount + 1 } };
-          setCompletedStats(updatedStats2);
-          localStorage.setItem("romanji_completed_libraries", JSON.stringify(updatedStats2));
-
+          roundCompletedLibId = libId;
           const libMeta = manifest.find(m => m.id === libId);
           setCongratulationLibName(libMeta?.name || "単語帳");
           setCongratulationLibId(libId);
@@ -530,12 +526,12 @@ export default function App() {
     const kpm = Math.round((totalKeysPressed - backspaceCount) / finalSeconds * 60);
     const efficiency = (correctKanaCount + mistakeCount) > 0 ? Math.round((correctKanaCount / (correctKanaCount + mistakeCount)) * 100) : 100;
 
-    // 更新本地数据库中选中词库的打过纪录（仅更新 KPM/效率，不增加完成回数）
+    // 更新本地数据库中选中词库的打过纪录（更新 KPM/效率，整轮完成时 +1 回数）
     const updatedStats = { ...completedStats };
     selectedLibraryIds.forEach(libId => {
       const prevRecord = updatedStats[libId] || { completedCount: 0, bestKPM: 0, bestEfficiency: 0, lastCompletedTime: 0 };
       updatedStats[libId] = {
-        completedCount: prevRecord.completedCount,
+        completedCount: prevRecord.completedCount + (libId === roundCompletedLibId ? 1 : 0),
         bestKPM: Math.max(prevRecord.bestKPM, kpm),
         bestEfficiency: Math.max(prevRecord.bestEfficiency, efficiency),
         lastCompletedTime: Date.now()
@@ -970,16 +966,38 @@ export default function App() {
                 <div className="setting-card glass-card" style={{ cursor: "default" }}>
                   <div className="stat-header-label" style={{ marginBottom: "8px" }}>出題数</div>
                   <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
-                    {[10, 20, 50, 0].map(count => (
-                      <button
-                        key={count}
-                        className={`btn-secondary ${wordCountOption === count ? "btn-option-selected" : ""}`}
-                        style={{ padding: "6px 8px", fontSize: "12px", flex: 1 }}
-                        onClick={() => setWordCountOption(count)}
-                      >
-                        {count === 0 ? "無制限" : count}
-                      </button>
-                    ))}
+                    {(() => {
+                      // 计算选中词库的剩余未练习单词数
+                      const selectedId = selectedLibraryIds[0] || "";
+                      const totalCount = libraryTotalCounts[selectedId] || 0;
+                      const progressCount = (libraryProgress[selectedId] || []).length;
+                      const remaining = totalCount > 0 ? totalCount - progressCount : 0;
+                      // 如果剩余为0表示还没加载或刚重置，用totalCount
+                      const available = remaining > 0 ? remaining : totalCount;
+
+                      const baseOptions = [10, 20, 50, 0];
+                      // 如果可用数量小于最小选项(10)，替换最小选项为可用数量
+                      let options = baseOptions;
+                      if (available > 0 && available < baseOptions[0]) {
+                        options = [available, ...baseOptions.slice(1)];
+                      }
+
+                      return options.map(count => {
+                        const isDisabled = count > 0 && available > 0 && count > available;
+                        const isSelected = wordCountOption === count || (count === available && wordCountOption > available && count !== 0);
+                        return (
+                          <button
+                            key={count}
+                            className={`btn-secondary ${isSelected ? "btn-option-selected" : ""}`}
+                            style={{ padding: "6px 8px", fontSize: "12px", flex: 1, opacity: isDisabled ? 0.4 : 1 }}
+                            onClick={() => { if (!isDisabled) setWordCountOption(count); }}
+                            disabled={isDisabled}
+                          >
+                            {count === 0 ? "無制限" : count}
+                          </button>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               </div>
@@ -1201,7 +1219,7 @@ export default function App() {
             </div>
 
             <div>
-              <h2>結果</h2>
+              <h2>リザルト</h2>
               <p style={{ color: "var(--text-secondary)", fontSize: "13px", marginTop: "4px" }}>
                 お疲れさまでした。
               </p>
