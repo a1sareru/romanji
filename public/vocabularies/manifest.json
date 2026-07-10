@@ -1,0 +1,8 @@
+[
+  {"id":"sample","name":"サンプル","description":"小書き、濁点、半濁点、カタカナを含む総合練習用のサンプルです。","path":"vocabularies/sample.json"},
+  {"id":"n5","name":"N5","description":"JLPT N5レベルの単語帳","path":"vocabularies/n5.json"},
+  {"id":"n4","name":"N4","description":"JLPT N4レベルの単語帳","path":"vocabularies/n4.json"},
+  {"id":"n3","name":"N3","description":"JLPT N3レベルの単語帳","path":"vocabularies/n3.json"},
+  {"id":"n2","name":"N2","description":"JLPT N2レベルの単語帳","path":"vocabularies/n2.json"},
+  {"id":"n1","name":"N1","description":"JLPT N1レベルの単語帳","path":"vocabularies/n1.json"}
+]
