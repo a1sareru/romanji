@@ -14,13 +14,3 @@
 ### 単語データ
 
 JLPT単語データは [elzup/jlpt-word-list](https://github.com/elzup/jlpt-word-list) を利用しています。
-
-> MIT License
->
-> Copyright (c) 2020 Jamie Sinclair
->
-> Copyright (c) 2020 elzup
-
-## ライセンス
-
-MIT

@@ -1,5 +1,7 @@
 MIT License
 
+Copyright (c) 2020 Jamie Sinclair
+Copyright (c) 2020 elzup
 Copyright (c) 2026 a1sareru
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,8 +21,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Thanks to all open-source contributors and the JLPT word list project for
-making language learning resources freely available.
