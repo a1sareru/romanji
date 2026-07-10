@@ -229,7 +229,7 @@ export default function App() {
     // 获取词库清单
     setManifestLoading(true);
     setManifestError(null);
-    fetch("/vocabularies/manifest.json")
+    fetch(`${import.meta.env.BASE_URL}vocabularies/manifest.json`)
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP 错误 ${res.status}: ${res.statusText}`);
@@ -246,7 +246,7 @@ export default function App() {
 
         // 异步加载所有单词本的单词总数，用于计算进度百分比
         const countPromises = data.map(lib => {
-          const fetchPath = lib.path ? `/${lib.path}` : `/vocabularies/${lib.id}.json`;
+          const fetchPath = lib.path ? `${import.meta.env.BASE_URL}${lib.path}` : `${import.meta.env.BASE_URL}vocabularies/${lib.id}.json`;
           return fetch(fetchPath)
             .then(r => {
               if (!r.ok) throw new Error();
@@ -563,7 +563,7 @@ export default function App() {
       // 动态获取所选词库的数据
       const dataPromises = selectedLibraryIds.map(id => {
         const meta = manifest.find(m => m.id === id);
-        const fetchPath = meta?.path ? `/${meta.path}` : `/vocabularies/${id}.json`;
+        const fetchPath = meta?.path ? `${import.meta.env.BASE_URL}${meta.path}` : `${import.meta.env.BASE_URL}vocabularies/${id}.json`;
         return fetch(fetchPath)
           .then(r => {
             if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
