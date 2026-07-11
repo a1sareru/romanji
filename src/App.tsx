@@ -1335,7 +1335,7 @@ export default function App() {
                     style={{ flex: 1, padding: "6px 4px", fontSize: "12px" }}
                     onClick={() => setMorePanelTab(tab)}
                   >
-                    {tab === "stat" ? "Stat" : tab === "settings" ? "Settings" : "About"}
+                    {tab === "stat" ? "Status" : tab === "settings" ? "Settings" : "About"}
                   </button>
                 ))}
               </div>
@@ -1429,7 +1429,7 @@ export default function App() {
                     本サイトはiPhoneのかな入力（フリック入力）のみを対象とした仮名タイピング練習サイトです。ローマ字入力やPC入力には対応していません。
                   </p>
                   <p style={{ fontSize: "11px", lineHeight: "1.7", color: "var(--text-secondary)", margin: "8px 0 0 0" }}>
-                    サイト名「ロマンジ」（浪漫時）は、「ローマ字」と「ロマン」を掛け合わせた造語です。（けれど本サイトの練習は、ローマ字入力じゃなくて、かな入力です。<del>さようなら、ローマ字くん！</del>）
+                    サイト名「ロマンジ」（浪漫時）は、「ローマ字」と「ロマン」を掛け合わせた造語です。（けれど本サイトの練習は、ローマ字入力じゃなくて、かな入力です。<del>さようなら、全てのローマ字くん！</del>）
                   </p>
                   <p style={{ fontSize: "11px", lineHeight: "1.7", color: "var(--text-secondary)", margin: "8px 0 0 0" }}>
                     キーをタップするとその行の「あ段」が入力されます。上下左右にフリック（スワイプ）すると「い・う・え・お段」を入力できます。
