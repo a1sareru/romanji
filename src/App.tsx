@@ -149,11 +149,18 @@ function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
-// 去除假名中无需输入的特殊字符（～、括号注释、空格等），并将片假名转为平假名
+// 去除假名中无需输入的特殊字符（～、括号注释、空格、分号等），并将片假名转为平假名
 function stripSpecialChars(str: string): string {
-  const cleaned = str.replace(/[～〜・\-]/g, "").replace(/\s*[\(（].*?[\)）]/g, "").replace(/\s+/g, "");
+  const cleaned = str.replace(/[～〜・\-]/g, "").replace(/\s*[\(（].*?[\)）]/g, "").replace(/;\s*/g, "").replace(/\s+/g, "");
   // カタカナ (U+30A1-U+30F6) → ひらがな (U+3041-U+3096)
   return cleaned.replace(/[\u30A1-\u30F6]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60));
+}
+
+// 检查过滤后的读音是否全为可输入字符（平假名+长音符+键盘可输入标点）
+function isTypeable(str: string): boolean {
+  const cleaned = stripSpecialChars(str);
+  if (cleaned.length === 0) return false;
+  return /^[\u3041-\u3096\u30FC、。？！]+$/.test(cleaned);
 }
 
 export default function App() {
@@ -582,7 +589,7 @@ export default function App() {
       });
 
       const results = await Promise.all(dataPromises);
-      const combinedWords = results.flat() as WordItem[];
+      const combinedWords = results.flat().filter(w => isTypeable(w.n)) as WordItem[];
 
       if (combinedWords.length === 0) {
         alert("選択された単語帳に単語が含まれていません。");
@@ -1149,8 +1156,11 @@ export default function App() {
                     const isWhiteKey = [
                       "key_a", "key_ta", "key_ma", "key_mod",
                       "key_ka", "key_na", "key_ya", "key_wa",
-                      "key_sa", "key_ha", "key_ra", "key_punc",
-                      "back_to_menu"
+                      "key_sa", "key_ha", "key_ra", "key_punc"
+                    ].includes(k.id);
+
+                    const isDeadKey = [
+                      "switch_count", "switch_time", "back_to_menu", "toggle_mute", "key_space"
                     ].includes(k.id);
 
                     return (
@@ -1164,6 +1174,8 @@ export default function App() {
                           isWhiteKey ? "key-style-white" : "key-style-gray"
                         } ${
                           isActive ? "active-flick" : ""
+                        } ${
+                          isDeadKey ? "dead-key" : ""
                         }`}
                         onTouchStart={(e) => handleTouchStart(k.id, e)}
                         onTouchMove={handleTouchMove}

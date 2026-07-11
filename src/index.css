@@ -489,6 +489,16 @@ rt {
   transform: scale(0.96);
 }
 
+/* 死键：无交互反馈 */
+.flick-key.dead-key {
+  pointer-events: none;
+  cursor: default;
+}
+.flick-key.dead-key:active {
+  transform: none;
+  background: inherit;
+}
+
 :root[data-theme="light"] .flick-key.key-style-gray {
   background: #e1e3de; /* 灰白底色 */
   border: 1px solid rgba(0, 0, 0, 0.06);
