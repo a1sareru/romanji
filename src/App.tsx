@@ -1435,6 +1435,10 @@ export default function App() {
                     キーをタップするとその行の「あ段」が入力されます。上下左右にフリック（スワイプ）すると「い・う・え・お段」を入力できます。
                     濁点・半濁点・小書きは、文字入力後に左下の変換キーをタップして切り替えます。
                   </p>
+                  <hr style={{ border: "none", borderTop: "1px solid var(--border-color)", margin: "12px 0" }} />
+                  <p style={{ fontSize: "11px", lineHeight: "1.7", color: "var(--text-secondary)", margin: 0 }}>
+                    JLPT単語データは <a href="https://github.com/elzup/jlpt-word-list" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-color)" }}>elzup/jlpt-word-list</a> を利用しています。
+                  </p>
                 </div>
               )}
 
