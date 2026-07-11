@@ -4,8 +4,7 @@ import {
   RotateCcw, 
   Sun, 
   Moon, 
-  Trophy, 
-  X
+  Trophy
 } from "lucide-react";
 // convertRomaji is not imported since PC mode is removed.
 import { playClickSound, playErrorSound, playSuccessSound } from "./utils/audio";
@@ -150,9 +149,11 @@ function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
-// 去除假名中无需输入的特殊字符（～、括号注释、空格等）
+// 去除假名中无需输入的特殊字符（～、括号注释、空格等），并将片假名转为平假名
 function stripSpecialChars(str: string): string {
-  return str.replace(/[～〜・\-]/g, "").replace(/\s*[\(（].*?[\)）]/g, "").replace(/\s+/g, "");
+  const cleaned = str.replace(/[～〜・\-]/g, "").replace(/\s*[\(（].*?[\)）]/g, "").replace(/\s+/g, "");
+  // カタカナ (U+30A1-U+30F6) → ひらがな (U+3041-U+3096)
+  return cleaned.replace(/[\u30A1-\u30F6]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60));
 }
 
 export default function App() {
@@ -190,6 +191,7 @@ export default function App() {
   const [showProgress, setShowProgress] = useState<boolean>(true);
   const [showMeaning, setShowMeaning] = useState<boolean>(true);
   const [morePanelTab, setMorePanelTab] = useState<"stat" | "settings" | "about">("stat");
+  const [showStopConfirm, setShowStopConfirm] = useState<boolean>(false);
   
   // --- 游戏进行中状态 ---
   const [wordsList, setWordsList] = useState<WordItem[]>([]);
@@ -239,8 +241,22 @@ export default function App() {
       .then((data: LibraryMeta[]) => {
         setManifest(data);
         if (data.length > 0) {
-          // selectedLibraryId is loaded later from romanji_settings
-          setSelectedLibraryIds([data[0].id]);
+          // 从 settings 恢复上次选择的词库
+          try {
+            const savedSettings = localStorage.getItem("romanji_settings");
+            if (savedSettings) {
+              const parsed = JSON.parse(savedSettings);
+              if (parsed.selectedLibraryId && data.some(m => m.id === parsed.selectedLibraryId)) {
+                setSelectedLibraryIds([parsed.selectedLibraryId]);
+              } else {
+                setSelectedLibraryIds([data[0].id]);
+              }
+            } else {
+              setSelectedLibraryIds([data[0].id]);
+            }
+          } catch {
+            setSelectedLibraryIds([data[0].id]);
+          }
         }
         setManifestLoading(false);
 
@@ -299,9 +315,6 @@ export default function App() {
         if (parsed.showProgress !== undefined) setShowProgress(parsed.showProgress);
         if (parsed.showMeaning !== undefined) setShowMeaning(parsed.showMeaning);
         if (parsed.wordCountOption !== undefined) setWordCountOptionState(parsed.wordCountOption);
-        if (parsed.selectedLibraryId) {
-          setSelectedLibraryIds([parsed.selectedLibraryId]);
-        }
         if (parsed.theme !== undefined) {
           activeTheme = parsed.theme;
         } else {
@@ -853,41 +866,43 @@ export default function App() {
       <div className="app-viewport">
         {/* 页眉导航 */}
         <header className="app-header">
-          <div 
-            className="app-title flex-center" 
-            style={{ gap: "6px", cursor: "pointer" }}
-            onClick={() => {
-              if (timerRef.current) {
-                clearInterval(timerRef.current);
-                timerRef.current = null;
-              }
-              setIsGameRunning(false);
-              setScreen("SELECTION");
-            }}
-          >
-            <span>ロマンジ</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div 
+              className="app-title flex-center" 
+              style={{ gap: "6px", cursor: "pointer" }}
+              onClick={() => {
+                if (timerRef.current) {
+                  clearInterval(timerRef.current);
+                  timerRef.current = null;
+                }
+                setIsGameRunning(false);
+                setScreen("SELECTION");
+              }}
+            >
+              <span>ロマンジ</span>
+            </div>
+            {/* 深浅主题切换 */}
+            <button className="icon-btn" onClick={toggleTheme} title="テーマ切替">
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
           </div>
 
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-            {/* More 面板入口 */}
-            <button className="icon-btn" onClick={() => setShowMorePanel(true)} title="More" style={{ fontSize: "13px", fontWeight: "600" }}>
-              More
-            </button>
-            {/* 深浅主题切换 */}
-            <button className="icon-btn" onClick={toggleTheme} title="テーマ切替">
-              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
             {/* 如果正在游戏中，提供退出键 */}
             {screen === "PRACTICE" && (
               <button 
                 className="icon-btn" 
-                onClick={() => endGameSession()} 
-                style={{ color: "var(--color-error)" }}
+                onClick={() => setShowStopConfirm(true)} 
                 title="練習を終了する"
+                style={{ fontSize: "13px", fontWeight: "600" }}
               >
-                <X size={20} />
+                終了
               </button>
             )}
+            {/* More 面板入口 */}
+            <button className="icon-btn" onClick={() => setShowMorePanel(true)} title="その他" style={{ fontSize: "18px", letterSpacing: "1px" }}>
+              ···
+            </button>
           </div>
         </header>
 
@@ -1054,7 +1069,7 @@ export default function App() {
               <div className="kanji-ruby-display animate-pop" key={`kanji-${currentIndex}`}>
                 <ruby>
                   {currentWord.j}
-                  <rt>{currentWord.n}</rt>
+                  {currentWord.j !== currentWord.n && <rt>{currentWord.n}</rt>}
                 </ruby>
               </div>
 
@@ -1430,6 +1445,70 @@ export default function App() {
               >
                 閉じる
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* 停止確認ダイアログ */}
+        {showStopConfirm && (
+          <div className="congrats-overlay flex-center" style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.65)",
+            backdropFilter: "blur(4px)",
+            zIndex: 9999,
+            padding: "20px"
+          }}>
+            <div className="glass-card animate-pop" style={{
+              maxWidth: "300px",
+              width: "100%",
+              padding: "24px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              background: "var(--panel-bg)",
+              border: "1px solid var(--panel-border)",
+              textAlign: "center"
+            }}>
+              <div style={{ fontSize: "14px", fontWeight: "600", color: "var(--text-primary)" }}>練習を終了しますか？</div>
+              <button
+                className="btn-secondary"
+                style={{ width: "100%", padding: "10px", fontSize: "13px" }}
+                onClick={() => setShowStopConfirm(false)}
+              >
+                続ける
+              </button>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  className="btn-secondary"
+                  style={{ flex: 1, padding: "10px", fontSize: "13px", color: "var(--color-error)" }}
+                  onClick={() => {
+                    setShowStopConfirm(false);
+                    if (timerRef.current) {
+                      clearInterval(timerRef.current);
+                      timerRef.current = null;
+                    }
+                    setIsGameRunning(false);
+                    sessionCompletedWordsRef.current = [];
+                    setScreen("SELECTION");
+                  }}
+                >
+                  やめる
+                </button>
+                <button
+                  className="btn-primary"
+                  style={{ flex: 1, padding: "10px", fontSize: "13px" }}
+                  onClick={() => {
+                    setShowStopConfirm(false);
+                    endGameSession();
+                  }}
+                >
+                  結果へ
+                </button>
+              </div>
             </div>
           </div>
         )}
