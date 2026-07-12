@@ -28,7 +28,7 @@
   --shadow-md: none;
   --shadow-glow: none;
   
-  --transition-fast: 0.2s ease;
+  --transition-fast: 0.08s ease;
   --transition-normal: 0.3s ease;
 }
 
@@ -538,78 +538,85 @@ rt {
 /* Flick overlay popups */
 .flick-pop-overlay {
   position: absolute;
-  top: -45px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 180px;
-  height: 180px;
+  transform: translate(-50%, -50%);
+  width: calc(100% * 3 + 12px);
+  height: calc(100% * 3 + 12px);
   z-index: 100;
   pointer-events: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 2px;
 }
 
 .flick-pop-cross {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  animation: pop-in 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: contents;
+  animation: pop-in 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 :root[data-theme="light"] .flick-pop-cross {
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  display: contents;
 }
 
 .flick-pop-item {
-  position: absolute;
-  width: 36px;
-  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-japanese);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--text-secondary);
-  border-radius: 6px; /* 方形圆角 */
-  background: rgba(30, 32, 29, 0.95); /* 炭绿深色格子底 */
+  border-radius: var(--radius-md);
+  background: rgba(30, 32, 29, 0.95);
   border: 1px solid var(--panel-border);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   transition: all var(--transition-fast);
 }
 
 :root[data-theme="light"] .flick-pop-item {
-  background: #fdfcf9; /* 和纸浅色格子底 */
+  background: #fdfcf9;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .flick-pop-item.center {
-  top: 52px;
-  left: 52px;
-  width: 36px;
-  height: 36px;
+  grid-column: 2;
+  grid-row: 2;
   color: var(--text-primary);
-  font-size: 18px;
+  font-size: 20px;
 }
 
-.flick-pop-item.left  { top: 52px; left: 8px; }
-.flick-pop-item.up    { top: 8px; left: 52px; }
-.flick-pop-item.right { top: 52px; right: 8px; }
-.flick-pop-item.down  { bottom: 8px; left: 52px; }
+.flick-pop-item.left {
+  grid-column: 1;
+  grid-row: 2;
+}
+.flick-pop-item.right {
+  grid-column: 3;
+  grid-row: 2;
+}
+.flick-pop-item.up {
+  grid-column: 2;
+  grid-row: 1;
+}
+.flick-pop-item.down {
+  grid-column: 2;
+  grid-row: 3;
+}
 
 .flick-pop-item.active {
-  background: var(--color-accent) !important; /* 激活时主题色 */
-  color: #ffffff !important; /* 白字 */
+  background: var(--color-accent) !important;
+  color: #ffffff !important;
   border-color: var(--color-accent) !important;
   box-shadow: none;
-  transform: scale(1.15);
+  transform: scale(1.05);
+}
+
+/* Dim other keys when a flick key is active */
+.keyboard-grid-5x4.has-active-flick .flick-key:not(.active-flick) {
+  opacity: 0.3;
+  transition: opacity 0.05s;
 }
 
 /* Mode Selection / Main Menu Screen */
