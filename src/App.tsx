@@ -1073,12 +1073,14 @@ export default function App() {
 
             {/* 中间：目标词汇显示看板 */}
             <div className="word-board">
-              {/* 日文汉字与 Ruby 振假名 */}
+              {/* 日文汉字与读音 */}
               <div className="kanji-ruby-display animate-pop" key={`kanji-${currentIndex}`}>
-                <ruby style={{ fontSize: currentWord.j.length > 12 ? "16px" : currentWord.j.length > 9 ? "20px" : currentWord.j.length > 6 ? "24px" : undefined }}>
+                {currentWord.j !== currentWord.n && (
+                  <div className="reading-annotation">{currentWord.n}</div>
+                )}
+                <div className="kanji-main" style={{ fontSize: currentWord.j.length > 12 ? "16px" : currentWord.j.length > 9 ? "20px" : currentWord.j.length > 6 ? "24px" : undefined }}>
                   {currentWord.j}
-                  {currentWord.j !== currentWord.n && <rt>{currentWord.n}</rt>}
-                </ruby>
+                </div>
               </div>
 
               {/* 精细化字母匹配区 */}
