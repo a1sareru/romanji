@@ -1147,7 +1147,7 @@ export default function App() {
             {/* 下半部：手势键盘 (仅在 Flick 模式下展示) */}
             {inputMode === "flick" && (
               <div className="keyboard-section">
-                <div className={`keyboard-grid-5x4 ${activeFlickKey !== null ? "has-active-flick" : ""}`}>
+                <div className="keyboard-grid-5x4">
                   {KEYBOARD_KEYS.map(k => {
                     const isActive = k.keyNum !== undefined && activeFlickKey === k.keyNum;
 

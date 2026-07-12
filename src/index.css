@@ -543,7 +543,7 @@ button:active {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
-  gap: 2px;
+  gap: 0px;
 }
 
 .flick-pop-cross {
@@ -563,56 +563,65 @@ button:active {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-secondary);
-  border-radius: var(--radius-md);
   background: rgba(30, 32, 29, 0.95);
-  border: 1px solid var(--panel-border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--color-accent);
   transition: all var(--transition-fast);
 }
 
 :root[data-theme="light"] .flick-pop-item {
   background: #fdfcf9;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+/* 十字形：只有朝外的边有描边，内部相邻边去掉 */
 .flick-pop-item.center {
   grid-column: 2;
   grid-row: 2;
   color: var(--text-primary);
   font-size: 20px;
+  border: 2px solid var(--color-accent);
+  border-radius: 0;
+  /* 中心格：上下左右都和邻居贴，去掉所有内边 */
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+}
+
+.flick-pop-item.up {
+  grid-column: 2;
+  grid-row: 1;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border-bottom: none;
+}
+
+.flick-pop-item.down {
+  grid-column: 2;
+  grid-row: 3;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  border-top: none;
 }
 
 .flick-pop-item.left {
   grid-column: 1;
   grid-row: 2;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  border-right: none;
 }
+
 .flick-pop-item.right {
   grid-column: 3;
   grid-row: 2;
-}
-.flick-pop-item.up {
-  grid-column: 2;
-  grid-row: 1;
-}
-.flick-pop-item.down {
-  grid-column: 2;
-  grid-row: 3;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  border-left: none;
 }
 
 .flick-pop-item.active {
   background: var(--color-accent) !important;
   color: #ffffff !important;
-  border-color: var(--color-accent) !important;
-  box-shadow: none;
   transform: scale(1.05);
 }
 
-/* Dim other keys when a flick key is active */
-.keyboard-grid-5x4.has-active-flick .flick-key:not(.active-flick) {
-  opacity: 0.3;
-  transition: opacity 0.05s;
-}
+/* Dim other keys when a flick key is active — removed, using outline on popup instead */
 
 /* Mode Selection / Main Menu Screen */
 .selection-container {
