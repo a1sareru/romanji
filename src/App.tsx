@@ -718,8 +718,6 @@ export default function App() {
       return;
     }
 
-    setTotalKeysPressed(prev => prev + 1);
-
     // 检查输入偏差限制：如果在退格改正之前有拼写错误，拒绝除退格、修饰、功能以外的所有新键入
     if (wordsList.length > 0 && currentIndex < wordsList.length) {
       const currentWord = wordsList[currentIndex];
@@ -740,36 +738,39 @@ export default function App() {
 
     if (keyDef.type === "action") {
       handleActionKey(keyDef.id);
-    } else if (keyDef.id === "key_backspace") {
-      if (audioEnabled) playClickSound(0.3);
-      setBackspaceCount(prev => prev + 1);
-      if (userInput.length > 0) {
-        setUserInput(prev => prev.slice(0, -1));
-      }
-    } else if (keyDef.id === "key_space") {
-      // 死键，不作响应
-    } else if (keyDef.id === "key_mod") {
-      if (userInput.length > 0) {
-        const lastChar = userInput.slice(-1);
-        const cycle = MODIFIER_CYCLE[lastChar];
-        if (cycle) {
-          const currentIdx = cycle.indexOf(lastChar);
-          const nextChar = cycle[(currentIdx + 1) % cycle.length];
-          const nextInput = userInput.slice(0, -1) + nextChar;
-          validateInput(nextInput);
-        } else {
-          if (audioEnabled) playErrorSound(0.4);
+    } else {
+      setTotalKeysPressed(prev => prev + 1);
+      if (keyDef.id === "key_backspace") {
+        if (audioEnabled) playClickSound(0.3);
+        setBackspaceCount(prev => prev + 1);
+        if (userInput.length > 0) {
+          setUserInput(prev => prev.slice(0, -1));
         }
-      }
-    } else if (keyDef.type === "flick") {
-      let selectedChar = keyDef.center || "";
-      if (flickDirection === "left" && keyDef.left) selectedChar = keyDef.left;
-      else if (flickDirection === "up" && keyDef.up) selectedChar = keyDef.up;
-      else if (flickDirection === "right" && keyDef.right) selectedChar = keyDef.right;
-      else if (flickDirection === "down" && keyDef.down) selectedChar = keyDef.down;
+      } else if (keyDef.id === "key_space") {
+        // 死键，不作响应
+      } else if (keyDef.id === "key_mod") {
+        if (userInput.length > 0) {
+          const lastChar = userInput.slice(-1);
+          const cycle = MODIFIER_CYCLE[lastChar];
+          if (cycle) {
+            const currentIdx = cycle.indexOf(lastChar);
+            const nextChar = cycle[(currentIdx + 1) % cycle.length];
+            const nextInput = userInput.slice(0, -1) + nextChar;
+            validateInput(nextInput);
+          } else {
+            if (audioEnabled) playErrorSound(0.4);
+          }
+        }
+      } else if (keyDef.type === "flick") {
+        let selectedChar = keyDef.center || "";
+        if (flickDirection === "left" && keyDef.left) selectedChar = keyDef.left;
+        else if (flickDirection === "up" && keyDef.up) selectedChar = keyDef.up;
+        else if (flickDirection === "right" && keyDef.right) selectedChar = keyDef.right;
+        else if (flickDirection === "down" && keyDef.down) selectedChar = keyDef.down;
 
-      const nextInput = userInput + selectedChar;
-      validateInput(nextInput);
+        const nextInput = userInput + selectedChar;
+        validateInput(nextInput);
+      }
     }
 
     setActiveFlickKey(null);
@@ -955,14 +956,14 @@ export default function App() {
                       className={`library-card glass-card ${isSelected ? "selected" : ""}`}
                       onClick={() => handleSelectLibrary(lib.id)}
                       style={{ 
-                        padding: "10px 14px", 
+                        padding: "6px 10px", 
                         display: "flex", 
                         flexDirection: "column", 
                         alignItems: "flex-start", 
-                        gap: "4px" 
+                        gap: "2px" 
                       }}
                     >
-                      <div className="library-name" style={{ fontSize: "14px", fontWeight: "600", marginBottom: 0 }}>
+                      <div className="library-name" style={{ fontSize: "13px", fontWeight: "600", marginBottom: 0 }}>
                         {lib.name}
                       </div>
                       {showProgress && (
@@ -1073,7 +1074,7 @@ export default function App() {
             {/* 中间：目标词汇显示看板 */}
             <div className="word-board">
               {/* 日文汉字与 Ruby 振假名 */}
-              <div className="kanji-ruby-display animate-pop" key={`kanji-${currentIndex}`}>
+              <div className="kanji-ruby-display animate-pop" key={`kanji-${currentIndex}`} style={{ fontSize: currentWord.j.length > 10 ? "20px" : currentWord.j.length > 7 ? "24px" : undefined }}>
                 <ruby>
                   {currentWord.j}
                   {currentWord.j !== currentWord.n && <rt>{currentWord.n}</rt>}
@@ -1137,8 +1138,7 @@ export default function App() {
 
             {/* 提示 (键盘上方) */}
             {showMeaning && (
-              <div className="meaning-bubble animate-pop" key={`meaning-${currentIndex}`} style={{ alignSelf: "center", marginBottom: "8px" }}>
-                {currentWord.m}
+              <div className="meaning-bubble animate-pop" key={`meaning-${currentIndex}`} style={{ alignSelf: "center", marginBottom: "8px" }} dangerouslySetInnerHTML={{ __html: currentWord.m }}>
               </div>
             )}
 

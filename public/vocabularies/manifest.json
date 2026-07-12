@@ -1,44 +1,10 @@
 [
-  {
-    "id": "sample",
-    "name": "サンプル",
-    "description": "小書き、濁点、半濁点、カタカナを含む総合練習用のサンプルです。",
-    "path": "vocabularies/sample.json",
-    "hash": "5a1b7535d2b3"
-  },
-  {
-    "id": "n1",
-    "name": "JLPT N1",
-    "description": "JLPT N1レベルの単語帳",
-    "path": "vocabularies/n1.json",
-    "hash": "f7360f2e642e"
-  },
-  {
-    "id": "n2",
-    "name": "JLPT N2",
-    "description": "JLPT N2レベルの単語帳",
-    "path": "vocabularies/n2.json",
-    "hash": "5789612da4a8"
-  },
-  {
-    "id": "n3",
-    "name": "JLPT N3",
-    "description": "JLPT N3レベルの単語帳",
-    "path": "vocabularies/n3.json",
-    "hash": "fa86ce81617d"
-  },
-  {
-    "id": "n4",
-    "name": "JLPT N4",
-    "description": "JLPT N4レベルの単語帳",
-    "path": "vocabularies/n4.json",
-    "hash": "262c53b39742"
-  },
-  {
-    "id": "n5",
-    "name": "JLPT N5",
-    "description": "JLPT N5レベルの単語帳",
-    "path": "vocabularies/n5.json",
-    "hash": "8ec037c9ba00"
-  }
+  {"id":"sample","name":"サンプル","description":"小書き、濁点、半濁点、カタカナを含む総合練習用のサンプルです。","path":"vocabularies/sample.json"},
+  {"id":"n5","name":"JLPT N5","description":"JLPT N5レベルの単語帳","path":"vocabularies/n5.json"},
+  {"id":"n4","name":"JLPT N4","description":"JLPT N4レベルの単語帳","path":"vocabularies/n4.json"},
+  {"id":"n3","name":"JLPT N3","description":"JLPT N3レベルの単語帳","path":"vocabularies/n3.json"},
+  {"id":"n2","name":"JLPT N2","description":"JLPT N2レベルの単語帳","path":"vocabularies/n2.json"},
+  {"id":"n1","name":"JLPT N1","description":"JLPT N1レベルの単語帳","path":"vocabularies/n1.json"},
+  {"id":"mhyk-utage","name":"まほやく 宴","description":"魔法使いの約束 宴の料理名","path":"vocabularies/mhyk-utage.json"},
+  {"id":"mhyk-misc","name":"まほやく 雑","description":"魔法使いの約束 呪文・キャラ名など","path":"vocabularies/mhyk-misc.json"}
 ]
