@@ -1074,8 +1074,8 @@ export default function App() {
             {/* 中间：目标词汇显示看板 */}
             <div className="word-board">
               {/* 日文汉字与 Ruby 振假名 */}
-              <div className="kanji-ruby-display animate-pop" key={`kanji-${currentIndex}`} style={{ fontSize: currentWord.j.length > 10 ? "20px" : currentWord.j.length > 7 ? "24px" : undefined }}>
-                <ruby>
+              <div className="kanji-ruby-display animate-pop" key={`kanji-${currentIndex}`}>
+                <ruby style={{ fontSize: currentWord.j.length > 12 ? "16px" : currentWord.j.length > 9 ? "20px" : currentWord.j.length > 6 ? "24px" : undefined }}>
                   {currentWord.j}
                   {currentWord.j !== currentWord.n && <rt>{currentWord.n}</rt>}
                 </ruby>
