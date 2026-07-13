@@ -1132,6 +1132,10 @@ button:active {
   background: var(--panel-bg);
 }
 
+:root[data-theme="light"] .more-panel-modal {
+  background: #f3f0e7;
+}
+
 .more-panel-tabs {
   display: flex;
   gap: 4px;
@@ -1269,6 +1273,10 @@ button:active {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   text-align: center;
+}
+
+:root[data-theme="light"] .stop-confirm-modal {
+  background: #f3f0e7;
 }
 
 .stop-confirm-title {
