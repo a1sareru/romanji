@@ -211,6 +211,9 @@ export default function App() {
   const [shakeWord, setShakeWord] = useState<boolean>(false);
   const [isGameRunning, setIsGameRunning] = useState<boolean>(false);
   
+  // --- 结算结果缓存（确保 SUMMARY 展示值与 PB 保存值一致）---
+  const [resultKPM, setResultKPM] = useState<number>(0);
+
   // --- 时间与计时器 ---
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [elapsedTime, setElapsedTime] = useState<number>(0); // 秒
@@ -225,6 +228,9 @@ export default function App() {
   
   // 记录开始时间戳以防定时器漂移
   const startTimeStampRef = useRef<number | null>(null);
+  // 暂停时累計已暂停的毫秒数，以便恢复后正确计算经过时间
+  const pausedDurationRef = useRef<number>(0);
+  const pauseStartRef = useRef<number | null>(null);
 
   // 本次练习中已通过的单词（仅在 endGameSession 时提交到进度）
   const sessionCompletedWordsRef = useRef<WordItem[]>([]);
@@ -368,6 +374,8 @@ export default function App() {
   const startGameTimer = () => {
     setIsGameRunning(true);
     startTimeStampRef.current = Date.now();
+    pausedDurationRef.current = 0;
+    pauseStartRef.current = null;
     
     if (timeLimitOption > 0) {
       setTimeLeft(timeLimitOption);
@@ -376,8 +384,10 @@ export default function App() {
 
     timerRef.current = setInterval(() => {
       if (startTimeStampRef.current === null) return;
+      // 暂停中は更新しない
+      if (pauseStartRef.current !== null) return;
       
-      const delta = Math.floor((Date.now() - startTimeStampRef.current) / 1000);
+      const delta = Math.floor((Date.now() - startTimeStampRef.current - pausedDurationRef.current) / 1000);
       setElapsedTime(delta);
 
       if (timeLimitOption > 0) {
@@ -548,8 +558,17 @@ export default function App() {
     sessionCompletedWordsRef.current = [];
 
     // 计算成绩 (按照用户新公式: (总点击数 - 退格数) / 时间 * 60)
-    const kpm = Math.round((totalKeysPressed - backspaceCount) / finalSeconds * 60);
+    // 使用 startTimeStampRef 实时计算最终经过时间，减去暂停时长
+    const realElapsed = startTimeStampRef.current
+      ? Math.floor((Date.now() - startTimeStampRef.current - pausedDurationRef.current) / 1000)
+      : finalSeconds;
+    const actualSeconds = realElapsed <= 0 ? 1 : realElapsed;
+    const kpm = Math.round((totalKeysPressed - backspaceCount) / actualSeconds * 60);
     const efficiency = (correctKanaCount + mistakeCount) > 0 ? Math.round((correctKanaCount / (correctKanaCount + mistakeCount)) * 100) : 100;
+
+    // 将计算结果存入 state，确保 SUMMARY 展示值与 PB 保存值完全一致
+    setResultKPM(kpm);
+    setElapsedTime(actualSeconds);
 
     // 更新本地数据库中选中词库的打过纪录（更新 KPM/效率，整轮完成时 +1 回数）
     const updatedStats = { ...completedStats };
@@ -908,7 +927,10 @@ export default function App() {
             {screen === "PRACTICE" && (
               <button 
                 className="icon-btn stop-btn-text" 
-                onClick={() => setShowStopConfirm(true)} 
+                onClick={() => {
+                  pauseStartRef.current = Date.now();
+                  setShowStopConfirm(true);
+                }} 
                 title="練習を終了する"
               >
                 終了
@@ -1262,7 +1284,7 @@ export default function App() {
             {/* 核心指标展示 */}
             <div className="result-kpm-box">
               <span className="result-kpm-val">
-                {Math.round((totalKeysPressed - backspaceCount) / (elapsedTime <= 0 ? 1 : elapsedTime) * 60)}
+                {resultKPM}
               </span>
               <span className="result-kpm-lbl">タイピング速度（KPM）</span>
             </div>
@@ -1462,7 +1484,14 @@ export default function App() {
               <div className="stop-confirm-title">練習を終了しますか？</div>
               <button
                 className="btn-secondary stop-confirm-continue"
-                onClick={() => setShowStopConfirm(false)}
+                onClick={() => {
+                  // 恢复计时：累加暂停时长
+                  if (pauseStartRef.current !== null) {
+                    pausedDurationRef.current += Date.now() - pauseStartRef.current;
+                    pauseStartRef.current = null;
+                  }
+                  setShowStopConfirm(false);
+                }}
               >
                 続ける
               </button>
@@ -1471,6 +1500,7 @@ export default function App() {
                   className="btn-secondary stop-confirm-quit"
                   onClick={() => {
                     setShowStopConfirm(false);
+                    pauseStartRef.current = null;
                     if (timerRef.current) {
                       clearInterval(timerRef.current);
                       timerRef.current = null;
@@ -1486,6 +1516,11 @@ export default function App() {
                   className="btn-primary stop-confirm-result"
                   onClick={() => {
                     setShowStopConfirm(false);
+                    // 累加暂停时长后再结算
+                    if (pauseStartRef.current !== null) {
+                      pausedDurationRef.current += Date.now() - pauseStartRef.current;
+                      pauseStartRef.current = null;
+                    }
                     endGameSession();
                   }}
                 >
