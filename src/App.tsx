@@ -222,10 +222,10 @@ export default function App() {
   const timerRef = useRef<any>(null);
   
   // --- 效率与按键统计 ---
-  const [totalKeysPressed, setTotalKeysPressed] = useState<number>(0);
+  const [, setTotalKeysPressed] = useState<number>(0);
   const [backspaceCount, setBackspaceCount] = useState<number>(0);
   const [effectiveKeysCount, setEffectiveKeysCount] = useState<number>(0);
-  const [correctKanaCount, setCorrectKanaCount] = useState<number>(0);
+  const [, setCorrectKanaCount] = useState<number>(0);
   const [mistakeCount, setMistakeCount] = useState<number>(0);
   const [errorsPerRow, setErrorsPerRow] = useState<Record<string, number>>({});
   
