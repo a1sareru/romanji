@@ -1380,8 +1380,27 @@ export default function App() {
                   {/* PB */}
                   <div className="stat-pb-row">
                     <span className="stat-pb-label">PB（自己ベスト）</span>
-                    <span className="stat-pb-value">
-                      {globalPB > 0 ? `${globalPB} KPM` : "---"}
+                    <span className="stat-pb-right">
+                      <span className="stat-pb-value">
+                        {globalPB > 0 ? `${globalPB} KPM` : "---"}
+                      </span>
+                      <button
+                        className="reset-row-btn"
+                        onClick={() => {
+                          if (confirm("PB（自己ベスト）をリセットしますか？")) {
+                            localStorage.removeItem("romanji_global_pb");
+                            setGlobalPB(0);
+                            const updatedStats = { ...completedStats };
+                            Object.keys(updatedStats).forEach(key => {
+                              updatedStats[key] = { ...updatedStats[key], bestKPM: 0, bestEfficiency: 0 };
+                            });
+                            setCompletedStats(updatedStats);
+                            localStorage.setItem("romanji_completed_libraries", JSON.stringify(updatedStats));
+                          }
+                        }}
+                      >
+                        リセット
+                      </button>
                     </span>
                   </div>
 
@@ -1395,7 +1414,22 @@ export default function App() {
                     );
                     return (
                       <div>
-                        <div className="stat-section-title">単語帳の学習回数</div>
+                        <div className="stat-section-title-row">
+                          <span className="stat-section-title">単語帳の学習回数</span>
+                          <button
+                            className="reset-row-btn"
+                            onClick={() => {
+                              if (confirm("学習進捗と回数をリセットしますか？（PBは保持されます）")) {
+                                localStorage.removeItem("romanji_library_progress");
+                                localStorage.removeItem("romanji_completed_libraries");
+                                setLibraryProgress({});
+                                setCompletedStats({});
+                              }
+                            }}
+                          >
+                            リセット
+                          </button>
+                        </div>
                         {entries.map(([libId, stat]) => {
                           const libMeta = manifest.find(m => m.id === libId);
                           return (
@@ -1408,23 +1442,6 @@ export default function App() {
                       </div>
                     );
                   })()}
-
-                  {/* 学習記録クリア */}
-                  <button
-                    className="btn-primary reset-btn"
-                    onClick={() => {
-                      if (confirm("学習記録（進捗・PB・回数）をすべてリセットしますか？")) {
-                        localStorage.removeItem("romanji_library_progress");
-                        localStorage.removeItem("romanji_global_pb");
-                        localStorage.removeItem("romanji_completed_libraries");
-                        setLibraryProgress({});
-                        setGlobalPB(0);
-                        setCompletedStats({});
-                      }
-                    }}
-                  >
-                    学習記録をリセット
-                  </button>
                 </>
               )}
 
