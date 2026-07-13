@@ -971,7 +971,7 @@ export default function App() {
                           <span>
                             {completedCount === 0 && completedStats[lib.id]?.completedCount > 0
                               ? `${completedStats[lib.id].completedCount}回`
-                              : `進捗: ${completedCount}/${totalCount} (${percentage}%)`
+                              : `[${completedCount+1}目] ${totalCount} (${percentage}%)`
                             }
                           </span>
                         </div>
