@@ -1029,8 +1029,7 @@ export default function App() {
                         return (
                           <button
                             key={count}
-                            className={`btn-secondary setting-option-btn ${isSelected ? "btn-option-selected" : ""}`}
-                            style={{ opacity: isDisabled ? 0.4 : 1 }}
+                            className={`btn-secondary setting-option-btn ${isSelected ? "btn-option-selected" : ""} ${isDisabled ? "btn-disabled" : ""}`}
                             onClick={() => { if (!isDisabled) setWordCountOption(count); }}
                             disabled={isDisabled}
                           >
@@ -1312,12 +1311,12 @@ export default function App() {
 
             {/* 生疏度 analysis */}
             <div className="summary-weakness-section">
-              <h3 className="section-title" style={{ textAlign: "left" }}>苦手かも？</h3>
+              <h3 className="section-title section-title-left">苦手かも？</h3>
               <div className="glass-card weakness-card-padding">
                 <div className="mastery-row-list">
                   <div className="mastery-row-item">
                     <span className="mastery-row-name">ミスが多かった行</span>
-                    <span className="mastery-row-rate" style={{ color: Object.keys(errorsPerRow).length > 0 ? "var(--color-error)" : "var(--color-success)" }}>
+                    <span className={`mastery-row-rate ${Object.keys(errorsPerRow).length > 0 ? "mastery-row-rate-error" : "mastery-row-rate-success"}`}>
                       {getTopFailingRow()}
                     </span>
                   </div>

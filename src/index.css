@@ -1347,3 +1347,20 @@ button:active {
   padding: 10px;
   margin-top: 8px;
 }
+
+/* Extracted from inline styles */
+.section-title-left {
+  text-align: left;
+}
+
+.mastery-row-rate-error {
+  color: var(--color-error);
+}
+
+.mastery-row-rate-success {
+  color: var(--color-success);
+}
+
+.btn-disabled {
+  opacity: 0.4;
+}
