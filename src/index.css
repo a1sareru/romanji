@@ -819,6 +819,7 @@ button:active {
   flex-direction: column;
   align-items: center;
   margin-bottom: 4px;
+  position: relative;
 }
 .result-kpm-val {
   font-size: 42px;
@@ -1363,4 +1364,43 @@ button:active {
 
 .btn-disabled {
   opacity: 0.4;
+}
+
+/* KPM info tooltip */
+.kpm-info-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  color: var(--text-dim);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.kpm-info-icon:hover {
+  color: var(--text-secondary);
+}
+
+.kpm-info-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  background: rgba(30, 32, 29, 0.95);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  text-align: center;
+  font-weight: 400;
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+}
+
+:root[data-theme="light"] .kpm-info-tooltip {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }

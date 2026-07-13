@@ -7,7 +7,8 @@ import {
   Trophy,
   Volume2,
   VolumeOff,
-  Settings
+  Settings,
+  CircleHelp
 } from "lucide-react";
 // convertRomaji is not imported since PC mode is removed.
 import { playClickSound, playErrorSound, playSuccessSound } from "./utils/audio";
@@ -203,6 +204,7 @@ export default function App() {
   const [showTypingGuide, setShowTypingGuide] = useState<boolean>(true);
   const [morePanelTab, setMorePanelTab] = useState<"stat" | "settings" | "about">("stat");
   const [showStopConfirm, setShowStopConfirm] = useState<boolean>(false);
+  const [showKpmInfo, setShowKpmInfo] = useState<boolean>(false);
   
   // --- 游戏进行中状态 ---
   const [wordsList, setWordsList] = useState<WordItem[]>([]);
@@ -222,6 +224,7 @@ export default function App() {
   // --- 效率与按键统计 ---
   const [totalKeysPressed, setTotalKeysPressed] = useState<number>(0);
   const [backspaceCount, setBackspaceCount] = useState<number>(0);
+  const [effectiveKeysCount, setEffectiveKeysCount] = useState<number>(0);
   const [correctKanaCount, setCorrectKanaCount] = useState<number>(0);
   const [mistakeCount, setMistakeCount] = useState<number>(0);
   const [errorsPerRow, setErrorsPerRow] = useState<Record<string, number>>({});
@@ -417,6 +420,7 @@ export default function App() {
     if (isPrefixCorrect) {
       // 输入正确（或者合法的中间态）
       setUserInput(newInput);
+      setEffectiveKeysCount(prev => prev + 1);
       if (audioEnabled) playClickSound(0.6);
 
       // 如果完全匹配目标词汇，触发结算并切换下一个词
@@ -563,8 +567,8 @@ export default function App() {
       ? Math.floor((Date.now() - startTimeStampRef.current - pausedDurationRef.current) / 1000)
       : finalSeconds;
     const actualSeconds = realElapsed <= 0 ? 1 : realElapsed;
-    const kpm = Math.round((totalKeysPressed - backspaceCount) / actualSeconds * 60);
-    const efficiency = (correctKanaCount + mistakeCount) > 0 ? Math.round((correctKanaCount / (correctKanaCount + mistakeCount)) * 100) : 100;
+    const kpm = Math.round(effectiveKeysCount / actualSeconds * 60);
+    const efficiency = (effectiveKeysCount + mistakeCount) > 0 ? Math.round((effectiveKeysCount / (effectiveKeysCount + mistakeCount)) * 100) : 0;
 
     // 将计算结果存入 state，确保 SUMMARY 展示值与 PB 保存值完全一致
     setResultKPM(kpm);
@@ -644,6 +648,7 @@ export default function App() {
       setUserInput("");
       setTotalKeysPressed(0);
       setBackspaceCount(0);
+      setEffectiveKeysCount(0);
       setCorrectKanaCount(0);
       setMistakeCount(0);
       setErrorsPerRow({});
@@ -1087,7 +1092,7 @@ export default function App() {
               </div>
               <div className="stat-header-card">
                 <div className="stat-header-label">打鍵数</div>
-                <div className="stat-header-value">{totalKeysPressed}</div>
+                <div className="stat-header-value">{effectiveKeysCount}</div>
               </div>
               <div className="stat-header-card">
                 <div className="stat-header-label">修正</div>
@@ -1268,7 +1273,7 @@ export default function App() {
 
         {/* 3. 游戏成绩结算屏幕 (SUMMARY) */}
         {screen === "SUMMARY" && (
-          <div className="summary-container animate-pop">
+          <div className="summary-container animate-pop" onClick={() => showKpmInfo && setShowKpmInfo(false)}>
             <div className="trophy-glow">
               <Trophy size={42} />
             </div>
@@ -1285,13 +1290,24 @@ export default function App() {
               <span className="result-kpm-val">
                 {resultKPM}
               </span>
-              <span className="result-kpm-lbl">タイピング速度（KPM）</span>
+              <span className="result-kpm-lbl">
+                タイピング速度（KPM）
+                <span className="kpm-info-icon" onClick={(e) => { e.stopPropagation(); setShowKpmInfo(!showKpmInfo); }}>
+                  <CircleHelp size={14} />
+                </span>
+              </span>
+              {showKpmInfo && (
+                <div className="kpm-info-tooltip" onClick={(e) => e.stopPropagation()}>
+                  KPM = 有効打鍵数 ÷ 経過時間（秒）× 60<br/>
+                  ミス入力・バックスペース・無効キーは含みません。
+                </div>
+              )}
             </div>
 
             <div className="results-details-grid">
               <div className="result-detail-card glass-card">
                 <span className="result-detail-val">
-                  {(correctKanaCount + mistakeCount) > 0 ? Math.round((correctKanaCount / (correctKanaCount + mistakeCount)) * 100) : 100}%
+                  {(effectiveKeysCount + mistakeCount) > 0 ? `${Math.round((effectiveKeysCount / (effectiveKeysCount + mistakeCount)) * 100)}%` : "—"}
                 </span>
                 <span className="result-detail-lbl">正確率</span>
               </div>
@@ -1300,8 +1316,8 @@ export default function App() {
                 <span className="result-detail-lbl">クリアタイム</span>
               </div>
               <div className="result-detail-card glass-card">
-                <span className="result-detail-val">{totalKeysPressed} 回</span>
-                <span className="result-detail-lbl">キー入力数</span>
+                <span className="result-detail-val">{effectiveKeysCount} 回</span>
+                <span className="result-detail-lbl">打鍵数</span>
               </div>
               <div className="result-detail-card glass-card">
                 <span className="result-detail-val">{backspaceCount} 回</span>
