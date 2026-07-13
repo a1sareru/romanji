@@ -935,3 +935,406 @@ button:active {
   border-color: var(--color-accent) !important;
   color: #ffffff !important;
 }
+
+/* ===== Extracted inline styles ===== */
+
+/* Header */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.app-title-clickable {
+  gap: 6px;
+  cursor: pointer;
+}
+
+.stop-btn-text {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Selection screen */
+.loading-card {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loading-text {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.error-card {
+  padding: 30px 20px;
+  text-align: center;
+  border: 1px solid var(--color-error);
+}
+
+.error-title {
+  color: var(--color-error);
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.error-detail {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.reload-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.section-title-primary {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.library-card-compact {
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.library-name-compact {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.library-sub-text {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* Settings rows (selection screen) */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.setting-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.setting-options {
+  display: flex;
+  gap: 6px;
+}
+
+.setting-option-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.setting-toggle-btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  flex: none;
+}
+
+/* Practice screen */
+.practice-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.stats-header-no-radius {
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+.stat-value-warning {
+  color: var(--color-warning);
+}
+
+.meaning-bubble-centered {
+  align-self: center;
+  margin-bottom: 8px;
+}
+
+/* Summary screen */
+.summary-subtitle {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.summary-weakness-section {
+  width: 100%;
+}
+
+.weakness-card-padding {
+  padding: 8px 16px;
+}
+
+.summary-btn-group {
+  margin-top: auto;
+}
+
+.btn-gap {
+  gap: 6px;
+}
+
+/* Modal overlay (shared) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  padding: 20px;
+}
+
+/* More panel modal */
+.more-panel-modal {
+  max-width: 380px;
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--panel-border);
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--panel-bg);
+}
+
+.more-panel-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 12px;
+}
+
+.more-panel-tab-btn {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: 12px;
+}
+
+/* Stat tab */
+.stat-pb-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.stat-pb-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat-pb-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.stat-empty-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 12px 0;
+}
+
+.stat-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.stat-lib-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 3px 0;
+  color: var(--text-primary);
+}
+
+.stat-lib-count {
+  font-weight: 600;
+}
+
+.reset-btn {
+  width: 100%;
+  padding: 8px;
+  background: var(--color-error);
+  font-size: 12px;
+}
+
+/* Settings tab */
+.settings-panel-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.settings-panel-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.settings-panel-toggle {
+  padding: 4px 12px;
+  font-size: 11px;
+  flex: none;
+}
+
+/* About tab */
+.about-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.about-text {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.about-text-spaced {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 8px 0 0 0;
+}
+
+.about-divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 12px 0;
+}
+
+.about-link {
+  color: var(--color-accent);
+}
+
+.modal-close-btn {
+  width: 100%;
+  padding: 8px;
+  font-size: 12px;
+}
+
+/* Stop confirm dialog */
+.stop-confirm-modal {
+  max-width: 300px;
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  text-align: center;
+}
+
+.stop-confirm-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stop-confirm-continue {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+}
+
+.stop-confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.stop-confirm-quit {
+  flex: 1;
+  padding: 10px;
+  font-size: 13px;
+  color: var(--color-error);
+}
+
+.stop-confirm-result {
+  flex: 1;
+  padding: 10px;
+  font-size: 13px;
+}
+
+/* Congratulation modal */
+.congrats-modal-inner {
+  max-width: 360px;
+  width: 100%;
+  padding: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  border: 2px solid var(--color-accent);
+}
+
+.congrats-emoji {
+  font-size: 40px;
+}
+
+.congrats-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.congrats-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.congrats-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.congrats-close-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+}

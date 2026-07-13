@@ -879,10 +879,9 @@ export default function App() {
       <div className="app-viewport">
         {/* 页眉导航 */}
         <header className="app-header">
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="header-left">
             <div 
-              className="app-title flex-center" 
-              style={{ gap: "6px", cursor: "pointer" }}
+              className="app-title flex-center app-title-clickable" 
               onClick={() => {
                 if (timerRef.current) {
                   clearInterval(timerRef.current);
@@ -904,14 +903,13 @@ export default function App() {
             </button>
           </div>
 
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <div className="header-right">
             {/* 如果正在游戏中，提供退出键 */}
             {screen === "PRACTICE" && (
               <button 
-                className="icon-btn" 
+                className="icon-btn stop-btn-text" 
                 onClick={() => setShowStopConfirm(true)} 
                 title="練習を終了する"
-                style={{ fontSize: "13px", fontWeight: "600" }}
               >
                 終了
               </button>
@@ -927,22 +925,21 @@ export default function App() {
         {screen === "SELECTION" && (
           <div className="selection-container">
             {manifestLoading ? (
-              <div className="glass-card" style={{ padding: "40px 20px", textAlign: "center" }}>
-                <div style={{ fontSize: "15px", color: "var(--text-secondary)", fontWeight: "500" }}>
+              <div className="glass-card loading-card">
+                <div className="loading-text">
                   🛸 単語帳データを読み込んでいます...
                 </div>
               </div>
             ) : manifestError ? (
-              <div className="glass-card" style={{ padding: "30px 20px", textAlign: "center", border: "1px solid var(--color-error)" }}>
-                <div style={{ color: "var(--color-error)", fontWeight: "700", marginBottom: "10px", fontSize: "16px" }}>
+              <div className="glass-card error-card">
+                <div className="error-title">
                   ❌ 単語帳の読み込みに失敗しました
                 </div>
-                <div style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "20px", wordBreak: "break-all", lineHeight: "1.5" }}>
+                <div className="error-detail">
                   {manifestError}
                 </div>
                 <button 
-                  className="btn-secondary" 
-                  style={{ padding: "10px 20px", fontSize: "14px", width: "100%" }}
+                  className="btn-secondary reload-btn" 
                   onClick={() => window.location.reload()}
                 >
                   再読み込み
@@ -951,7 +948,7 @@ export default function App() {
             ) : (
               <>
                 <div>
-                  <h3 className="section-title" style={{ fontWeight: "700", color: "var(--text-primary)" }}>単語帳を選択</h3>
+                  <h3 className="section-title section-title-primary">単語帳を選択</h3>
               <div className="library-list">
                 {manifest.map(lib => {
                   const isSelected = selectedLibraryIds.includes(lib.id);
@@ -962,21 +959,14 @@ export default function App() {
                   return (
                     <div 
                       key={lib.id} 
-                      className={`library-card glass-card ${isSelected ? "selected" : ""}`}
+                      className={`library-card glass-card library-card-compact ${isSelected ? "selected" : ""}`}
                       onClick={() => handleSelectLibrary(lib.id)}
-                      style={{ 
-                        padding: "6px 10px", 
-                        display: "flex", 
-                        flexDirection: "column", 
-                        alignItems: "flex-start", 
-                        gap: "2px" 
-                      }}
                     >
-                      <div className="library-name" style={{ fontSize: "13px", fontWeight: "600", marginBottom: 0 }}>
+                      <div className="library-name library-name-compact">
                         {lib.name}
                       </div>
                       {showProgress && (
-                        <div className="library-sub" style={{ fontSize: "11px", color: "var(--text-secondary)" }}>
+                        <div className="library-sub library-sub-text">
                           <span>
                             {completedCount === 0 && completedStats[lib.id]?.completedCount > 0
                               ? `${completedStats[lib.id].completedCount}回`
@@ -992,12 +982,12 @@ export default function App() {
             </div>
 
             <div>
-              <h3 className="section-title" style={{ fontWeight: "700", color: "var(--text-primary)" }}>設定</h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <h3 className="section-title section-title-primary">設定</h3>
+              <div className="settings-list">
                 {/* 出題数 */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: "13px", fontWeight: "500", color: "var(--text-secondary)" }}>出題数</span>
-                  <div style={{ display: "flex", gap: "6px" }}>
+                <div className="setting-row">
+                  <span className="setting-label">出題数</span>
+                  <div className="setting-options">
                     {(() => {
                       const selectedId = selectedLibraryIds[0] || "";
                       const totalCount = libraryTotalCounts[selectedId] || 0;
@@ -1017,8 +1007,8 @@ export default function App() {
                         return (
                           <button
                             key={count}
-                            className={`btn-secondary ${isSelected ? "btn-option-selected" : ""}`}
-                            style={{ padding: "5px 10px", fontSize: "12px", opacity: isDisabled ? 0.4 : 1 }}
+                            className={`btn-secondary setting-option-btn ${isSelected ? "btn-option-selected" : ""}`}
+                            style={{ opacity: isDisabled ? 0.4 : 1 }}
                             onClick={() => { if (!isDisabled) setWordCountOption(count); }}
                             disabled={isDisabled}
                           >
@@ -1030,11 +1020,10 @@ export default function App() {
                   </div>
                 </div>
                 {/* 入力ガイド */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: "13px", fontWeight: "500", color: "var(--text-secondary)" }}>入力ガイド</span>
+                <div className="setting-row">
+                  <span className="setting-label">入力ガイド</span>
                   <button
-                    className={`btn-secondary ${showTypingGuide ? "btn-option-selected" : ""}`}
-                    style={{ padding: "5px 12px", fontSize: "12px", flex: "none" }}
+                    className={`btn-secondary setting-toggle-btn ${showTypingGuide ? "btn-option-selected" : ""}`}
                     onClick={() => { setShowTypingGuide(!showTypingGuide); saveSettings({ showTypingGuide: !showTypingGuide }); }}
                   >
                     {showTypingGuide ? "ON" : "OFF"}
@@ -1057,9 +1046,9 @@ export default function App() {
 
         {/* 2. 核心打字练习面板 (PRACTICE) */}
         {screen === "PRACTICE" && currentWord && (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          <div className="practice-container">
             {/* 上半部：效率看板 */}
-            <div className="stats-header-grid glass-card" style={{ borderRadius: 0, borderLeft: 0, borderRight: 0 }}>
+            <div className="stats-header-grid glass-card stats-header-no-radius">
               <div className="stat-header-card">
                 <div className="stat-header-label">進捗</div>
                 <div className="stat-header-value">
@@ -1081,7 +1070,7 @@ export default function App() {
               </div>
               <div className="stat-header-card">
                 <div className="stat-header-label">修正</div>
-                <div className="stat-header-value" style={{ color: backspaceCount > 0 ? "var(--color-warning)" : "var(--text-primary)" }}>
+                <div className={`stat-header-value ${backspaceCount > 0 ? "stat-value-warning" : ""}`}>
                   {backspaceCount}
                 </div>
               </div>
@@ -1156,7 +1145,7 @@ export default function App() {
               </div>
             </div>
             {showMeaning && (
-              <div className="meaning-bubble animate-pop" key={`meaning-${currentIndex}`} style={{ alignSelf: "center", marginBottom: "8px" }} dangerouslySetInnerHTML={{ __html: currentWord.m }}>
+              <div className="meaning-bubble meaning-bubble-centered animate-pop" key={`meaning-${currentIndex}`} dangerouslySetInnerHTML={{ __html: currentWord.m }}>
               </div>
             )}
 
@@ -1265,7 +1254,7 @@ export default function App() {
 
             <div>
               <h2>リザルト</h2>
-              <p style={{ color: "var(--text-secondary)", fontSize: "13px", marginTop: "4px" }}>
+              <p className="summary-subtitle">
                 お疲れさまでした。
               </p>
             </div>
@@ -1300,9 +1289,9 @@ export default function App() {
             </div>
 
             {/* 生疏度 analysis */}
-            <div style={{ width: "100%" }}>
+            <div className="summary-weakness-section">
               <h3 className="section-title" style={{ textAlign: "left" }}>苦手かも？</h3>
-              <div className="glass-card" style={{ padding: "8px 16px" }}>
+              <div className="glass-card weakness-card-padding">
                 <div className="mastery-row-list">
                   <div className="mastery-row-item">
                     <span className="mastery-row-name">ミスが多かった行</span>
@@ -1316,12 +1305,12 @@ export default function App() {
             </div>
 
             {/* 操作控制 */}
-            <div className="secondary-btn-group" style={{ marginTop: "auto" }}>
-              <button className="btn-secondary flex-center" onClick={() => setScreen("SELECTION")} style={{ gap: "6px" }}>
+            <div className="secondary-btn-group summary-btn-group">
+              <button className="btn-secondary flex-center btn-gap" onClick={() => setScreen("SELECTION")}>
                 <RotateCcw size={16} />
                 <span>ホームに戻る</span>
               </button>
-              <button className="btn-primary flex-center" onClick={startPractice} style={{ gap: "6px" }}>
+              <button className="btn-primary flex-center btn-gap" onClick={startPractice}>
                 <Play size={16} fill="white" />
                 <span>もう一度練習</span>
               </button>
@@ -1332,37 +1321,15 @@ export default function App() {
         {/* 祝賀弹出框 (Congratulations Pass Modal) */}
         {/* More 信息面板 */}
         {showMorePanel && (
-          <div className="congrats-overlay flex-center" style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0, 0, 0, 0.65)",
-            backdropFilter: "blur(4px)",
-            zIndex: 9999,
-            padding: "20px"
-          }} onClick={() => setShowMorePanel(false)}>
-            <div className="congrats-modal glass-card animate-pop" style={{
-              maxWidth: "380px",
-              width: "100%",
-              padding: "24px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-              border: "1px solid var(--panel-border)",
-              maxHeight: "80vh",
-              overflowY: "auto",
-              background: "var(--panel-bg)"
-            }} onClick={e => e.stopPropagation()}>
+          <div className="congrats-overlay flex-center modal-overlay" onClick={() => setShowMorePanel(false)}>
+            <div className="congrats-modal glass-card animate-pop more-panel-modal" onClick={e => e.stopPropagation()}>
 
               {/* Tab 切换 */}
-              <div style={{ display: "flex", gap: "4px", borderBottom: "1px solid var(--panel-border)", paddingBottom: "12px" }}>
+              <div className="more-panel-tabs">
                 {(["stat", "settings", "about"] as const).map(tab => (
                   <button
                     key={tab}
-                    className={`btn-secondary ${morePanelTab === tab ? "btn-option-selected" : ""}`}
-                    style={{ flex: 1, padding: "6px 4px", fontSize: "12px" }}
+                    className={`btn-secondary more-panel-tab-btn ${morePanelTab === tab ? "btn-option-selected" : ""}`}
                     onClick={() => setMorePanelTab(tab)}
                   >
                     {tab === "stat" ? "Status" : tab === "settings" ? "Settings" : "About"}
@@ -1374,9 +1341,9 @@ export default function App() {
               {morePanelTab === "stat" && (
                 <>
                   {/* PB */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid var(--panel-border)" }}>
-                    <span style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-primary)" }}>PB（自己ベスト）</span>
-                    <span style={{ fontSize: "14px", fontWeight: "700", color: "var(--color-accent)" }}>
+                  <div className="stat-pb-row">
+                    <span className="stat-pb-label">PB（自己ベスト）</span>
+                    <span className="stat-pb-value">
                       {globalPB > 0 ? `${globalPB} KPM` : "---"}
                     </span>
                   </div>
@@ -1385,19 +1352,19 @@ export default function App() {
                   {(() => {
                     const entries = Object.entries(completedStats).filter(([, v]) => v.completedCount > 0);
                     if (entries.length === 0) return (
-                      <div style={{ fontSize: "12px", color: "var(--text-secondary)", textAlign: "center", padding: "12px 0" }}>
+                      <div className="stat-empty-text">
                         まだ学習記録がありません
                       </div>
                     );
                     return (
                       <div>
-                        <div style={{ fontSize: "12px", fontWeight: "600", marginBottom: "6px", color: "var(--text-primary)" }}>単語帳の学習回数</div>
+                        <div className="stat-section-title">単語帳の学習回数</div>
                         {entries.map(([libId, stat]) => {
                           const libMeta = manifest.find(m => m.id === libId);
                           return (
-                            <div key={libId} style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", padding: "3px 0", color: "var(--text-primary)" }}>
+                            <div key={libId} className="stat-lib-row">
                               <span>{libMeta?.name || libId}</span>
-                              <span style={{ fontWeight: "600" }}>{stat.completedCount}回</span>
+                              <span className="stat-lib-count">{stat.completedCount}回</span>
                             </div>
                           );
                         })}
@@ -1407,8 +1374,7 @@ export default function App() {
 
                   {/* 学習記録クリア */}
                   <button
-                    className="btn-primary"
-                    style={{ width: "100%", padding: "8px", background: "var(--color-error)", fontSize: "12px" }}
+                    className="btn-primary reset-btn"
                     onClick={() => {
                       if (confirm("学習記録（進捗・PB・回数）をすべてリセットしますか？")) {
                         localStorage.removeItem("romanji_library_progress");
@@ -1428,31 +1394,28 @@ export default function App() {
               {/* Settings Tab */}
               {morePanelTab === "settings" && (
                 <>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid var(--panel-border)" }}>
-                    <span style={{ fontSize: "13px", fontWeight: "500", color: "var(--text-primary)" }}>単語帳の進捗を表示</span>
+                  <div className="settings-panel-row">
+                    <span className="settings-panel-label">単語帳の進捗を表示</span>
                     <button
-                      className={`btn-secondary ${showProgress ? "btn-option-selected" : ""}`}
-                      style={{ padding: "4px 12px", fontSize: "11px", flex: "none" }}
+                      className={`btn-secondary settings-panel-toggle ${showProgress ? "btn-option-selected" : ""}`}
                       onClick={() => { setShowProgress(!showProgress); saveSettings({ showProgress: !showProgress }); }}
                     >
                       {showProgress ? "ON" : "OFF"}
                     </button>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid var(--panel-border)" }}>
-                    <span style={{ fontSize: "13px", fontWeight: "500", color: "var(--text-primary)" }}>単語の解釈を表示</span>
+                  <div className="settings-panel-row">
+                    <span className="settings-panel-label">単語の解釈を表示</span>
                     <button
-                      className={`btn-secondary ${showMeaning ? "btn-option-selected" : ""}`}
-                      style={{ padding: "4px 12px", fontSize: "11px", flex: "none" }}
+                      className={`btn-secondary settings-panel-toggle ${showMeaning ? "btn-option-selected" : ""}`}
                       onClick={() => { setShowMeaning(!showMeaning); saveSettings({ showMeaning: !showMeaning }); }}
                     >
                       {showMeaning ? "ON" : "OFF"}
                     </button>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid var(--panel-border)" }}>
-                    <span style={{ fontSize: "13px", fontWeight: "500", color: "var(--text-primary)" }}>入力ガイドを表示</span>
+                  <div className="settings-panel-row">
+                    <span className="settings-panel-label">入力ガイドを表示</span>
                     <button
-                      className={`btn-secondary ${showTypingGuide ? "btn-option-selected" : ""}`}
-                      style={{ padding: "4px 12px", fontSize: "11px", flex: "none" }}
+                      className={`btn-secondary settings-panel-toggle ${showTypingGuide ? "btn-option-selected" : ""}`}
                       onClick={() => { setShowTypingGuide(!showTypingGuide); saveSettings({ showTypingGuide: !showTypingGuide }); }}
                     >
                       {showTypingGuide ? "ON" : "OFF"}
@@ -1464,27 +1427,26 @@ export default function App() {
               {/* About Tab */}
               {morePanelTab === "about" && (
                 <div>
-                  <div style={{ fontSize: "12px", fontWeight: "600", marginBottom: "6px", color: "var(--text-primary)" }}>このサイトについて</div>
-                  <p style={{ fontSize: "11px", lineHeight: "1.7", color: "var(--text-secondary)", margin: 0 }}>
+                  <div className="about-section-title">このサイトについて</div>
+                  <p className="about-text">
                     本サイトはiPhoneのかな入力（フリック入力）のみを対象とした仮名タイピング練習サイトです。ローマ字入力やPC入力には対応していません。
                   </p>
-                  <p style={{ fontSize: "11px", lineHeight: "1.7", color: "var(--text-secondary)", margin: "8px 0 0 0" }}>
+                  <p className="about-text-spaced">
                     サイト名「ロマンジ」（浪漫時）は、「ローマ字」と「ロマン」を掛け合わせた造語です。（けれど本サイトの練習は、ローマ字入力じゃなくて、かな入力です。<del>さようなら、全てのローマ字くん！</del>）
                   </p>
-                  <p style={{ fontSize: "11px", lineHeight: "1.7", color: "var(--text-secondary)", margin: "8px 0 0 0" }}>
+                  <p className="about-text-spaced">
                     キーをタップするとその行の「あ段」が入力されます。上下左右にフリック（スワイプ）すると「い・う・え・お段」を入力できます。
                     濁点・半濁点・小書きは、文字入力後に左下の変換キーをタップして切り替えます。
                   </p>
-                  <hr style={{ border: "none", borderTop: "1px solid var(--border-color)", margin: "12px 0" }} />
-                  <p style={{ fontSize: "11px", lineHeight: "1.7", color: "var(--text-secondary)", margin: 0 }}>
-                    JLPT単語データは <a href="https://github.com/elzup/jlpt-word-list" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-color)" }}>elzup/jlpt-word-list</a> を利用しています。
+                  <hr className="about-divider" />
+                  <p className="about-text">
+                    JLPT単語データは <a href="https://github.com/elzup/jlpt-word-list" target="_blank" rel="noopener noreferrer" className="about-link">elzup/jlpt-word-list</a> を利用しています。
                   </p>
                 </div>
               )}
 
               <button
-                className="btn-secondary"
-                style={{ width: "100%", padding: "8px", fontSize: "12px" }}
+                className="btn-secondary modal-close-btn"
                 onClick={() => setShowMorePanel(false)}
               >
                 閉じる
@@ -1495,40 +1457,18 @@ export default function App() {
 
         {/* 停止確認ダイアログ */}
         {showStopConfirm && (
-          <div className="congrats-overlay flex-center" style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0, 0, 0, 0.65)",
-            backdropFilter: "blur(4px)",
-            zIndex: 9999,
-            padding: "20px"
-          }}>
-            <div className="glass-card animate-pop" style={{
-              maxWidth: "300px",
-              width: "100%",
-              padding: "24px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
-              background: "var(--panel-bg)",
-              border: "1px solid var(--panel-border)",
-              textAlign: "center"
-            }}>
-              <div style={{ fontSize: "14px", fontWeight: "600", color: "var(--text-primary)" }}>練習を終了しますか？</div>
+          <div className="congrats-overlay flex-center modal-overlay">
+            <div className="glass-card animate-pop stop-confirm-modal">
+              <div className="stop-confirm-title">練習を終了しますか？</div>
               <button
-                className="btn-secondary"
-                style={{ width: "100%", padding: "10px", fontSize: "13px" }}
+                className="btn-secondary stop-confirm-continue"
                 onClick={() => setShowStopConfirm(false)}
               >
                 続ける
               </button>
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div className="stop-confirm-actions">
                 <button
-                  className="btn-secondary"
-                  style={{ flex: 1, padding: "10px", fontSize: "13px", color: "var(--color-error)" }}
+                  className="btn-secondary stop-confirm-quit"
                   onClick={() => {
                     setShowStopConfirm(false);
                     if (timerRef.current) {
@@ -1543,8 +1483,7 @@ export default function App() {
                   やめる
                 </button>
                 <button
-                  className="btn-primary"
-                  style={{ flex: 1, padding: "10px", fontSize: "13px" }}
+                  className="btn-primary stop-confirm-result"
                   onClick={() => {
                     setShowStopConfirm(false);
                     endGameSession();
@@ -1558,39 +1497,18 @@ export default function App() {
         )}
 
         {showCongratulation && (
-          <div className="congrats-overlay flex-center" style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0, 0, 0, 0.65)",
-            backdropFilter: "blur(4px)",
-            zIndex: 9999,
-            padding: "20px"
-          }}>
-            <div className="congrats-modal glass-card animate-pop" style={{
-              maxWidth: "360px",
-              width: "100%",
-              padding: "24px",
-              textAlign: "center",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "16px",
-              border: "2px solid var(--color-accent)"
-            }}>
-              <div style={{ fontSize: "40px" }}>🎉</div>
-              <h2 style={{ fontSize: "18px", fontWeight: "700" }}>読了おめでとうございます！</h2>
-              <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+          <div className="congrats-overlay flex-center modal-overlay">
+            <div className="congrats-modal glass-card animate-pop congrats-modal-inner">
+              <div className="congrats-emoji">🎉</div>
+              <h2 className="congrats-title">読了おめでとうございます！</h2>
+              <p className="congrats-desc">
                 単語帳<strong>「{congratulationLibName}」</strong>のすべての単語を練習しました。
               </p>
-              <p style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+              <p className="congrats-sub">
                 学習進捗をリセットし、新しいラウンドを開始します。
               </p>
               <button 
-                className="btn-primary" 
-                style={{ width: "100%", padding: "10px", marginTop: "8px" }}
+                className="btn-primary congrats-close-btn" 
                 onClick={handleDismissCongratulation}
               >
                 閉じる
