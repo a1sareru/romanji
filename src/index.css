@@ -236,7 +236,7 @@ button:active {
 .app-title {
   font-size: 20px;
   font-weight: 800;
-  color: var(--text-primary);
+  color:var(--color-accent);
 }
 
 .icon-btn {
@@ -704,6 +704,7 @@ button:active {
   flex: 1;
 }
 .library-name {
+  color: var(--text-secondary);
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 4px;
