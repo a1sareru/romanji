@@ -379,7 +379,9 @@ button:active {
 .virtual-input-preview-box {
   margin-top: 12px;
   min-height: 32px;
-  width: 95%; /* 扩宽输入预览以防换行 */
+  min-width: 60px;
+  width: fit-content;
+  padding: 4px 16px;
   background: rgba(0, 0, 0, 0.05); /* 弱化灰底 */
   border-radius: var(--radius-sm);
   border: 1px solid var(--text-dim); /* 普通低调边框 */

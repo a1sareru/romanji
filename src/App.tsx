@@ -4,7 +4,10 @@ import {
   RotateCcw, 
   Sun, 
   Moon, 
-  Trophy
+  Trophy,
+  Volume2,
+  VolumeOff,
+  Settings
 } from "lucide-react";
 // convertRomaji is not imported since PC mode is removed.
 import { playClickSound, playErrorSound, playSuccessSound } from "./utils/audio";
@@ -194,9 +197,10 @@ export default function App() {
     saveSettings({ wordCountOption: val });
   };
   const timeLimitOption = 0;
-  const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
+  const [audioEnabled, setAudioEnabled] = useState<boolean>(false);
   const [showProgress, setShowProgress] = useState<boolean>(true);
   const [showMeaning, setShowMeaning] = useState<boolean>(true);
+  const [showTypingGuide, setShowTypingGuide] = useState<boolean>(true);
   const [morePanelTab, setMorePanelTab] = useState<"stat" | "settings" | "about">("stat");
   const [showStopConfirm, setShowStopConfirm] = useState<boolean>(false);
   
@@ -321,6 +325,7 @@ export default function App() {
         if (parsed.audioEnabled !== undefined) setAudioEnabled(parsed.audioEnabled);
         if (parsed.showProgress !== undefined) setShowProgress(parsed.showProgress);
         if (parsed.showMeaning !== undefined) setShowMeaning(parsed.showMeaning);
+        if (parsed.showTypingGuide !== undefined) setShowTypingGuide(parsed.showTypingGuide);
         if (parsed.wordCountOption !== undefined) setWordCountOptionState(parsed.wordCountOption);
         if (parsed.theme !== undefined) {
           activeTheme = parsed.theme;
@@ -344,7 +349,7 @@ export default function App() {
   // 监听主题变化
   // 保存用户设置到localStorage的通用函数
   const saveSettings = (overrides: Record<string, any> = {}) => {
-    const settings = { theme, audioEnabled, showProgress, showMeaning, selectedLibraryId: selectedLibraryIds[0] || "", wordCountOption, ...overrides };
+    const settings = { theme, audioEnabled, showProgress, showMeaning, showTypingGuide, selectedLibraryId: selectedLibraryIds[0] || "", wordCountOption, ...overrides };
     localStorage.setItem("romanji_settings", JSON.stringify(settings));
   };
 
@@ -893,6 +898,10 @@ export default function App() {
             <button className="icon-btn" onClick={toggleTheme} title="テーマ切替">
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
             </button>
+            {/* 音効オン/オフ切替 */}
+            <button className="icon-btn" onClick={() => { const next = !audioEnabled; setAudioEnabled(next); saveSettings({ audioEnabled: next }); }} title="音効切替">
+              {audioEnabled ? <Volume2 size={18} /> : <VolumeOff size={18} />}
+            </button>
           </div>
 
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
@@ -908,8 +917,8 @@ export default function App() {
               </button>
             )}
             {/* More 面板入口 */}
-            <button className="icon-btn" onClick={() => setShowMorePanel(true)} title="その他" style={{ fontSize: "18px", letterSpacing: "1px" }}>
-              ···
+            <button className="icon-btn" onClick={() => setShowMorePanel(true)} title="その他">
+              <Settings size={18} />
             </button>
           </div>
         </header>
@@ -942,7 +951,7 @@ export default function App() {
             ) : (
               <>
                 <div>
-                  <h3 className="section-title">単語帳を選択</h3>
+                  <h3 className="section-title" style={{ fontWeight: "700", color: "var(--text-primary)" }}>単語帳を選択</h3>
               <div className="library-list">
                 {manifest.map(lib => {
                   const isSelected = selectedLibraryIds.includes(lib.id);
@@ -971,7 +980,7 @@ export default function App() {
                           <span>
                             {completedCount === 0 && completedStats[lib.id]?.completedCount > 0
                               ? `${completedStats[lib.id].completedCount}回`
-                              : `[${completedCount+1}目] ${totalCount} (${percentage}%)`
+                              : `${completedCount}/${totalCount} (${percentage}%)`
                             }
                           </span>
                         </div>
@@ -983,23 +992,20 @@ export default function App() {
             </div>
 
             <div>
-              <h3 className="section-title">設定</h3>
-              <div className="settings-grid">
-                {/* 词数选择 */}
-                <div className="setting-card glass-card" style={{ cursor: "default" }}>
-                  <div className="stat-header-label" style={{ marginBottom: "8px" }}>出題数</div>
-                  <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
+              <h3 className="section-title" style={{ fontWeight: "700", color: "var(--text-primary)" }}>設定</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {/* 出題数 */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: "13px", fontWeight: "500", color: "var(--text-secondary)" }}>出題数</span>
+                  <div style={{ display: "flex", gap: "6px" }}>
                     {(() => {
-                      // 计算选中词库的剩余未练习单词数
                       const selectedId = selectedLibraryIds[0] || "";
                       const totalCount = libraryTotalCounts[selectedId] || 0;
                       const progressCount = (libraryProgress[selectedId] || []).length;
                       const remaining = totalCount > 0 ? totalCount - progressCount : 0;
-                      // 如果剩余为0表示还没加载或刚重置，用totalCount
                       const available = remaining > 0 ? remaining : totalCount;
 
                       const baseOptions = [10, 20, 50, 0];
-                      // 如果可用数量小于最小选项(10)，替换最小选项为可用数量
                       let options = baseOptions;
                       if (available > 0 && available < baseOptions[0]) {
                         options = [available, ...baseOptions.slice(1)];
@@ -1012,22 +1018,32 @@ export default function App() {
                           <button
                             key={count}
                             className={`btn-secondary ${isSelected ? "btn-option-selected" : ""}`}
-                            style={{ padding: "6px 8px", fontSize: "12px", flex: 1, opacity: isDisabled ? 0.4 : 1 }}
+                            style={{ padding: "5px 10px", fontSize: "12px", opacity: isDisabled ? 0.4 : 1 }}
                             onClick={() => { if (!isDisabled) setWordCountOption(count); }}
                             disabled={isDisabled}
                           >
-                            {count === 0 ? "無制限" : count}
+                            {count === 0 ? "∞" : count}
                           </button>
                         );
                       });
                     })()}
                   </div>
                 </div>
+                {/* 入力ガイド */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: "13px", fontWeight: "500", color: "var(--text-secondary)" }}>入力ガイド</span>
+                  <button
+                    className={`btn-secondary ${showTypingGuide ? "btn-option-selected" : ""}`}
+                    style={{ padding: "5px 12px", fontSize: "12px", flex: "none" }}
+                    onClick={() => { setShowTypingGuide(!showTypingGuide); saveSettings({ showTypingGuide: !showTypingGuide }); }}
+                  >
+                    {showTypingGuide ? "ON" : "OFF"}
+                  </button>
+                </div>
               </div>
             </div>
 
-            <button 
-              className="action-btn-large" 
+            <button               className="action-btn-large" 
               onClick={startPractice}
               disabled={selectedLibraryIds.length === 0}
             >
@@ -1085,6 +1101,7 @@ export default function App() {
 
               {/* 精细化字母匹配区 */}
               <div className={`typing-guide-container ${shakeWord ? "animate-shake" : ""}`}>
+                {showTypingGuide && (
                 <div className="target-kana-spelling">
                   {(() => {
                     const targetKana = stripSpecialChars(currentWord.n);
@@ -1104,6 +1121,7 @@ export default function App() {
                     });
                   })()}
                 </div>
+                )}
 
                 {/* 虚拟输入框实时文字反馈 */}
                 <div className="virtual-input-preview-box">
@@ -1137,8 +1155,6 @@ export default function App() {
                 </div>
               </div>
             </div>
-
-            {/* 提示 (键盘上方) */}
             {showMeaning && (
               <div className="meaning-bubble animate-pop" key={`meaning-${currentIndex}`} style={{ alignSelf: "center", marginBottom: "8px" }} dangerouslySetInnerHTML={{ __html: currentWord.m }}>
               </div>
@@ -1430,6 +1446,16 @@ export default function App() {
                       onClick={() => { setShowMeaning(!showMeaning); saveSettings({ showMeaning: !showMeaning }); }}
                     >
                       {showMeaning ? "ON" : "OFF"}
+                    </button>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid var(--panel-border)" }}>
+                    <span style={{ fontSize: "13px", fontWeight: "500", color: "var(--text-primary)" }}>入力ガイドを表示</span>
+                    <button
+                      className={`btn-secondary ${showTypingGuide ? "btn-option-selected" : ""}`}
+                      style={{ padding: "4px 12px", fontSize: "11px", flex: "none" }}
+                      onClick={() => { setShowTypingGuide(!showTypingGuide); saveSettings({ showTypingGuide: !showTypingGuide }); }}
+                    >
+                      {showTypingGuide ? "ON" : "OFF"}
                     </button>
                   </div>
                 </>
